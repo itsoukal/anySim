@@ -1,0 +1,50 @@
+Package: anySim
+Type: Package
+Title: Stochastic Simulation of Processes with any Marginal Distribution and Correlation Structure
+Version: 0.1.0
+Authors@R: c( person("Ioannis", "Tsoukalas",
+                     role = c("aut", "cre","ctb"),
+                     email = "itsoukal@mail.ntua.gr"),
+              person("Panagiotis", "Kossieris", 
+                      role = c("aut","ctb")) )
+Description: anySim is an R package for the stochastic simulation of processes with any marginal distribution and dependence structure. Currently, the package provides models for the simulation of univariate stationary and cyclostationary processes, exhibiting continuous, discrete and mixed-type marginal distributions as well as any valid (i.e., positive definite) short-range or long-range autocorrelation structure. Furthermore, it implements a multivariate stationary stochastic model with similar capabilities, preserving also the lag-0 crosscorrelation coefficients among the processes. The package can be used for the generation of synthetic time series (e.g., rainfall, runoff, temperature, wind speed etc.) with the desired marginal and stochastic properties.
+Author: Ioannis Tsoukalas [aut, cre, ctb],
+  Panagiotis Kossieris [aut, ctb]
+Maintainer: Ioannis Tsoukalas <itsoukal@mail.ntua.gr>
+Imports:
+    pracma,
+    moments,
+    DEoptim,
+    cubature,
+    Matrix,
+    psych,
+    matrixcalc,
+    dplyr,
+    ExtDist,
+    VGAM,
+    Rsolnp,
+    parallel,
+    actuar
+Depends: R (>= 3.5.0), 
+    pracma,
+    moments,
+    DEoptim,
+    cubature,
+    Matrix,
+    psych,
+    matrixcalc,
+    dplyr,
+    ExtDist,
+    VGAM,
+    Rsolnp,
+    parallel,
+    actuar
+Suggests:
+    knitr,
+    rmarkdown
+License: GPL-3
+URL: www.itia.ntua.gr/en/softinfo/33/
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 6.1.1
+VignetteBuilder: knitr
