@@ -11,7 +11,7 @@
 #'
 #' \item Symmetric Moving Average To Anything - SMARTA(q): This model uses an appropriately parameterised SMA(q) model to simulate an auxiliary Gp to establish the target correlation structure. In the final step, the Gp realisation is mapped to the actual domain through the ICDF of the target distribution (Tsoukalas et al., 2018b, 2019; Tsoukalas, 2019).
 #'
-#' \item Stochastic Periodic Autoregressive To Anything model of order 1 - SPARTA: This model uses an appropriately parameterised univariate PAR(1) model to simulate a cyclostationary auxiliary Gp to establish the target season-to-season correlation structure (Tsoukalas et al., 2017, 2018a, 2019; Tsoukalas, 2019).
+#' \item Stochasticcc Periodic Autoregressive To Anything model of order 1 - SPARTA: This model uses an appropriately parameterised univariate PAR(1) model to simulate a cyclostationary auxiliary Gp to establish the target season-to-season correlation structure (Tsoukalas et al., 2017, 2018a, 2019; Tsoukalas, 2019).
 #'
 #' }
 #' @author \strong{Developed by:} Ioannis Tsoukalas \email{itsoukal@mail.ntua.gr} \cr
