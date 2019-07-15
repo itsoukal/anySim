@@ -47,6 +47,8 @@ EstnAR1<-function(ACF, Ar1Num, dist='qgamma', params, NatafIntMethod = 'GH', NoE
 
   x0=runif(Ar1Num*2) # initial values
 
+  #TO-DO: drop the depencence in Rsolnp
+
   Res=solnp(pars = x0, fun = nAR1obj, eqfun = nAR1con,
             eqB=1, LB=lb, UB=ub,
             ACF=GAFv, Ar1Num=Ar1Num)

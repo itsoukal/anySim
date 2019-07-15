@@ -30,6 +30,7 @@ given the equivalent correlation coefficients (i.e., in the Gaussian domain).
 }
 \note{
 Avoid the use of this function, when the marginal(s) are discrete.
+based on the blog-post of Matthew S. Shotwell (https://biostatmatt.com/archives/2754).
 }
 \examples{
 ## The case of two identrical Gamma distributions, with shape=1 and scale=1.

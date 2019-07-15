@@ -69,10 +69,7 @@ EstSPARTA=function(s2srtarget, dist, params, NatafIntMethod='GH', NoEval=9, poly
       pft<-params[[i]]
       pftt<-params[[i-1]]
 
-      # rz<-seq(0,1,length.out = NoEval)
-      # rx<-NatafGH(rz,ft,ftt,pft,pftt)
-      #
-      # r[i]<-NatafInv(rz,rx,target = s2srtarget[i],polydeg=polydeg)
+
       if (NatafIntMethod=='GH') {
         Nataf=NatafInvD(targetrho = s2srtarget[i], fx = ft, fy = ftt, paramlistfx = pft, paramlistfy = pftt,
                         NatafIntMethod = 'GH', polydeg=polydeg, NoEval = NoEval, ...)

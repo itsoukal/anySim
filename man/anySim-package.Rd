@@ -52,7 +52,7 @@ arbitrary marginal distributions. Water Resources Research 54 (1), 161-185.
 \href{https://doi.org/10.1002/2017WR021394}{(link)}
 
 \item Tsoukalas, I., Makropoulos, C., and Koutsoyiannis, D., 2018b. Simulation of Stochastic
-Processes Exhibiting Any‐Range Dependence and Arbitrary Marginal Distributions.
+Processes Exhibiting Any-Range Dependence and Arbitrary Marginal Distributions.
 Water Resources Research 54(11), 9484-9513. \href{https://doi.org/10.1029/2017WR022462}{(link)}
 
 \item Tsoukalas, I., Papalexiou, S.M, Efstratiadis, A., and Makropoulos, C., 2018c. A cautionary

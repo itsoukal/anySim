@@ -58,13 +58,3 @@ SimnAR1<-function(nAR1param, steps) {
   X=eval(as.call(c(as.name(dist), list(U), params)))
   return(list('X'=X, 'Z'=XX, 'U'=U))
 }
-# ACF=acsCAS(param = c(2, 0.5), lag = 500, var = 1)
-# dist='qmixed'
-# params=list(Distr=qgamma, p0=0.8, shape=0.5, scale=1)
-# nAR1param=EstnAR1(ACF = ACF, Ar1Num = 3, dist = dist, params = params,
-#                   NatafIntMethod = 'GH', NoEval = 9, polydeg = 8)
-#
-# Sim=SimnAR1(nAR1param = nAR1param, steps = 10^6)
-#
-# acf(Sim$X)
-# lines(0:500,ACF,col='red')

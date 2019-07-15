@@ -13,6 +13,7 @@
 #'
 #' @return A vector of correlation coefficients in the actual domain
 #' @note Avoid the use of this function, when the marginal(s) are discrete.
+#' This R function is based on the blog-post of Matthew S. Shotwell (https://biostatmatt.com/archives/2754).
 #' @export
 #'
 #' @examples
