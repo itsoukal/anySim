@@ -1,0 +1,49 @@
+#' @title Disaggregation of a single value to a timeseries sequence exhibiting the target marginal distribution and correlation structure (stationary).
+#' 
+#' @description Disaggregation of a single value to a timeseries sequence exhibiting the target marginal distribution and correlation structure (stationary).
+#' 
+#' @param HLValue A scalar specifying the (single) value to disaggreate into a time series sequence.
+#' @param ARTApar A list containing the parameters of the model. The list is constructed by the function "EstARTAp".
+#' @param max.iter A scalar specifying the maximum number of allowed repetitions (parameter of the disaggregation algorithm - typically set between 300-500.).
+#' @param steps A scalar specifying the number of timesteps of the sequence to generate.
+#' @param Adjust A logical operator (TRUE or FALSE) specifying whether (TRUE) or not (FALSE) to perfom the proportianal adjusting operation  (parameter of the disaggregation algorithm - typically set to TRUE).
+#'
+#' @return A list of the 3 generated time series (in vector format):
+#' X: The final time series at the actual domain with the target marginal distribution and correlation structure;
+#' Z: The auxiliary Gaussian time series at the Gaussian domain and;
+#' Diff: The difference between the (single) value to disaggreate with the sum of the generated sequence (i.e., aggregated to the same temporal level with the target value).
+#' Dicrit: The sum of the generated sequence (i.e., aggregated to the same temporal level with the target value).
+#'
+#' @export
+#'
+#'
+#' @examples
+#' ## Disaggregation of a single 24-hour Rainfall ammount to 1-minute sequence.
+#' ## The lower level process (i.e., that of 1-minute) is assumed to be a zero-inflated one 
+#' ## (i.e., using a mixed marginal distribution), with p0=0.95, and a Gamma distribution
+#' ## for the continuous part with shape=1 and scale=0.2.
+#' ## In this case, the target autocorrelation strucure is from
+#' ## the CAS ACS with b=0 and k=0.2.
+#' \dontrun{
+#' FX='qmixed'
+#' PFX=list(p0=0.95, Distr=qgamma, shape=1, scale=.2)
+#' maxlag=60
+#' ACFT=acsCAS(param = c(0, 0.2), lag=maxlag)
+#' param=EstARTAp(ACF = ACFT, dist = FX, params = PFX, NatafIntMethod = 'GH')
+#' 
+#' HLValue=10
+#'
+#' disag=Disagg_SV_S(HLValue = HLValue, ARTApar = param,
+#'                           max.iter = 300, steps = 24*60, Adjust = 1)$X
+#' }
+Disagg_SV_S<-function(HLValue, ARTApar, max.iter, steps, Adjust=T){
+  
+  Zprevious=rnorm(length(ARTApar$phi))
+  temp=Disagg_help(HLValue = HLValue, Zprevious = Zprevious, ARTApar = ARTApar, max.iter = max.iter, 
+                   steps = steps, Adjust = Adjust)
+  XBest=temp$X
+  ZBest=temp$Z
+  Diff=temp$Diff
+  Dicrit=temp$Dicrit
+  return(list('X'=XBest, 'Z'=ZBest,'Diff'=Diff, 'Dicrit'=Dicrit))
+}
