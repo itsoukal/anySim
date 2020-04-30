@@ -20,32 +20,59 @@
 #' @export
 #'
 #' @examples
-#' ## Simulation example of a bivariate process with
-#' ## zero-inflated marginal distributions.
-#' # Define the simulation parameters ----------------------------------------
+#' ## Simulation of homogenous and stationary non-Gaussian random fields (RFs)
 #' \dontrun{
-#' LAG=2^6
-#' FFTLag=2^7
-#' SMALAG=2^6
-#' steps=2^14
-#'
-#' PFXs=list()
-#' FXs=c('qmixed','qmixed')
-#' # Gamma distribution: Gamma(shape=2, rate=1)
-#' PFXs[[1]]=list(Distr=qgamma, p0=0.9, shape=1, scale=1)
-#' # Weibull distribution: Weibull(shape=1, scale=2)
-#' PFXs[[2]]=list(Distr=qweibull, p0=0.85, shape=1, scale=2)
-#'
-#' ACFs=list()
-#' ACFs[[1]]=acsCAS(param = c(0.1, 0.6), lag = LAG)
-#' ACFs[[2]]=acsCAS(param = c(0.2, 0.3), lag = LAG)
-#'
-#' Cmat=matrix(c(1,0.6,0.6,1), ncol=2, nrow=2)
-#'
-#' # Calculate SMARTA’s parameters -------------------------------------------
-#' SMAparam=EstSMARTA(dist = FXs, params = PFXs, ACFs = ACFs,
-#' Cmat = Cmat, DecoMethod = 'cor.smooth',
-#' FFTLag = FFTLag, NatafIntMethod = 'GH', NoEval = 9, polydeg = 8)
+#' 
+#' # Define a 30x30 grid to be simulated
+#' nx=30 # number of cells in the horizontal direction
+#' ny=30 # number of cells in the vertical direction
+#' Sites=nx*ny # number of grid points
+#' 
+#' Xp=seq(from=(0.5),to=nx,by=1) # points' coordinates in horizontal axis
+#' Yp=seq(from=(0.5),to=ny,by=1) # points' coordinates in vertical axis
+#' 
+#' grid=expand.grid(X=Xp,Y=Yp)
+#' 
+#' # plot(grid,cex=1,pch=19,col='lightblue',xlim=c(0, nx),ylim=c(0, ny))
+#' # text(grid,labels=rownames(grid),cex=0.5,font=2)
+#' # abline(h=0:nx,v=0:ny)
+#' # plot(grid,pch=19)
+#' 
+#' # Estimate the Euclidean distances between grid points
+#' DZ=dist(x=grid,method='euclidean',upper=T,diag=T)
+#' DZmat=as.matrix(DZ)
+#' EuclDist=DZmat[upper.tri(DZmat, diag = T)]
+#' 
+#' # Define the matrix of lag-0 cross-correlation coefficients among grid points.
+#' CCF=(1+0.2*2*EuclDist)^(-1/b) # CAS with b=0.2 and k=2.
+#' Cmat=matrix(NA,nrow=nx*ny,ncol=nx*ny)
+#' Cmat[upper.tri(Cmat,diag=T)]=CCF
+#' Cmat[lower.tri(Cmat,diag=T)]=rev(CCF)
+#' 
+#' # Define the target autocorrelation structure and distribution function (ICDF) at each point.
+#' # The distribution is of zero-inflated type with Burr Type-XII distribution for the continuous part.
+#'# Here, the following re-parameterized version of Burr Type-XII distribution is used.
+#' qburr=function(p,scale,shape1,shape2) {
+#'       require(ExtDist)
+#'       x=ExtDist::qBurr(p=p,b=scale,g=shape1,s=shape2)
+#'       return(x)
+#' }
+#' 
+#' FXs=rep('qzi',Sites) # Define that distributions are of zero-inflated type.
+#' PFXs=vector("list",length=Sites) # List with ICDF of each point
+#' ACFs=vector("list",length=Sites) # List with ACF of each point
+#' for (i in 1:Sites) {
+#'  PFXs[[i]]=list(Distr=qburr,p0=0.75,scale=71.62,shape1=0.88,shape2=11.79)
+#'  ACFs[[i]]=csCAS(param=c(0.1,0.6),lag=2^6) # CAS with b=0.1 and k=0.6.
+#' }
+#' 
+#' # Estimate the parameters of SMARTA model
+#' SMAparam=EstSMARTA_RFs(dist=FXs,params=PFXs,ACFs=ACFs,
+#'                        Cmat=Cmat,DecoMethod='cor.smooth',
+#'                        FFTLag=2^7,NatafIntMethod='GH',NoEval=9,polydeg=8)
+#' 
+#' # Generate a synthetic realisation of random fields with 2^15 length     
+#' SimField=SimSMARTA(SMARTApar=SMAparam,steps=2^15,SMALAG=2^6)
 #'}
 EstSMARTA_RFs<-function(dist, params, ACFs, Cmat, DecoMethod="cor.smooth", FFTLag=512, NatafIntMethod='GH', NoEval=9, polydeg=8, ...) {
 

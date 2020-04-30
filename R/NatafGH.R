@@ -30,7 +30,7 @@
 #' with p0=0.7 a Gamma distribution
 #' ## for the continuous part with shape=1 and scale=1.
 #'
-#' fx=fy='qmixed'
+#' fx=fy='qzi'
 #' pfx=pfy=list(Distr=qgamma, p0=0.7, shape=0.5, scale=1)
 #' rhoz=seq(from=0, to=1 , by=0.05)
 #' rhox=NatafGH(rho = rhoz, fx = fx, fy = fy, paramlistfx = pfx,

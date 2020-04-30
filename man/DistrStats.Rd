@@ -4,8 +4,15 @@
 \alias{DistrStats}
 \title{Estimation of the theoretical Mean, Variance, Skewness and Kurtosis coefficients of a distribution function (from the distribution function).}
 \usage{
-DistrStats(dDistr, lb = -Inf, ub = Inf, subdiv = 90000,
-  rel.tol = 10^-8, abs.tol = 10^-8, ...)
+DistrStats(
+  dDistr,
+  lb = -Inf,
+  ub = Inf,
+  subdiv = 90000,
+  rel.tol = 10^-8,
+  abs.tol = 10^-8,
+  ...
+)
 }
 \arguments{
 \item{dDistr}{The density function (as a function) of the distribution.}

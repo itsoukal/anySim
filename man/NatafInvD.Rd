@@ -4,8 +4,17 @@
 \alias{NatafInvD}
 \title{Direct estimation of equivalent correlation coefficients.}
 \usage{
-NatafInvD(targetrho, fx, fy, paramlistfx, paramlistfy,
-  NatafIntMethod = "GH", NoEval = 19, polydeg = 8, ...)
+NatafInvD(
+  targetrho,
+  fx,
+  fy,
+  paramlistfx,
+  paramlistfy,
+  NatafIntMethod = "GH",
+  NoEval = 19,
+  polydeg = 8,
+  ...
+)
 }
 \arguments{
 \item{targetrho}{A scalar or vector of target correlation coefficients.}
@@ -42,7 +51,7 @@ Avoid the use of the "GH" method (i.e., NatafIntMethod='GH'), when the marginal(
 ## with p0=0.9 a Gamma distribution
 ## for the continuous part with shape=0.1 and scale=1.
 \dontrun{
-fx=fy='qmixed'
+fx=fy='qzi'
 pfx=pfy=list(Distr=qgamma, p0=0.9, shape=0.1, scale=1)
 rhoz=seq(from=0, to=1 , length.out = 21)
 rhox=NatafInt(rho = rhoz, fx = fx, fy = fy, paramlistfx = pfx, paramlistfy = pfy)

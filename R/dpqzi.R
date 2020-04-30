@@ -1,4 +1,4 @@
-#' @title Zero-Inflated distribution model (i.e., mixed)
+#' @title Zero-Inflated distribution model (i.e., with an atom at zero)
 #'
 #' @description Density, distribution function, quantile function and random generation
 #'  for the zero-inflated (i.e., mixed) distribution model. This model is composed by two parts,
@@ -12,26 +12,26 @@
 #' @param p0 Probability of zero values (i.e., zero-inflation).
 #' @param ... Additional named arguments containing the continuous distribution parameters
 #'
-#' @name mixed
-#' @aliases mixed
-#' @aliases dmixed
+#' @name zi
+#' @aliases zi
+#' @aliases dzi
 #'
 #' @return
-#' dmixed gives the density of the zero-inflated (i.e., mixed) distribution model.
-#' pmixed gives the cdf of the zero-inflated (i.e., mixed) distribution model.
-#' qmixed gives the quantile (ICDF) of the zero-inflated (i.e., mixed) distribution model.
-#' rmixed gives random variates from the zero-inflated (i.e., mixed) distribution model.
+#' dzi gives the density of the zero-inflated distribution model.
+#' pzi gives the cdf of the zero-inflated distribution model.
+#' qzi gives the quantile (ICDF) of the zero-inflated distribution model.
+#' rzi gives random variates from the zero-inflated distribution model.
 #' @export
 #'
 #' @examples
 #' ## Plot the CDF of a Gamma distribution.
 #' p=seq(0,1,0.01)
-#' x=qmixed(p, Distr = qgamma, p0=0.7, shape=0.5, scale=1)
+#' x=qzi(p, Distr = qgamma, p0=0.7, shape=0.5, scale=1)
 #' plot(x, p)
 #'
 #' ## Generate 100000 random variables with p0=0.7 and
 #' ## Gamma distribution for the continoous part.
-#' X=rmixed(1000, qgamma, p0=0.7, shape=0.5, scale=1)
+#' X=rzi1000, qgamma, p0=0.7, shape=0.5, scale=1)
 #' hist(X)
 #'
 #' ## Generate 100000 random variables with p0=0.7 and
@@ -39,12 +39,12 @@
 #' ## The actuar package is required, since it contains
 #' ## the d,p,q,r functions of the Burr type XII distribution.
 #' require(actuar)
-#' X=rmixed(1000, qburr, p0=0.7, shape1=5, shape2=1, scale=1)
+#' X=rzi(1000, qburr, p0=0.7, shape1=5, shape2=1, scale=1)
 #' hist(X)
 #' plot(sort(X[X>0]), 1-ppoints(X[X>0], a=0), log='xy',
 #' xlab = 'x', ylab = 'P[X>x]', main='Prob of exceedance plot')
 #'
-dmixed=function(x,Distr,p0,...) {
+dzi=function(x,Distr,p0,...) {
   y=rep(NA,length(x))
 
   for (i in 1:length(x)){
@@ -58,10 +58,10 @@ dmixed=function(x,Distr,p0,...) {
   return(y)
 }
 
-#' @rdname mixed
+#' @rdname zi
 #' @export
 
-pmixed=function(q, Distr, p0,...) {
+pzi=function(q, Distr, p0,...) {
   y=rep(NA,length(q))
 
   for (i in 1:length(q)){
@@ -72,10 +72,10 @@ pmixed=function(q, Distr, p0,...) {
   return(y)
 }
 
-#' @rdname mixed
+#' @rdname zi
 #' @export
 
-qmixed=function(p, Distr, p0,...) {
+qzi=function(p, Distr, p0,...) {
   y=rep(NA,length(p))
 
   for (i in 1:length(p)){
@@ -90,10 +90,10 @@ qmixed=function(p, Distr, p0,...) {
   return(y)
 }
 
-#' @rdname mixed
+#' @rdname zi
 #' @export
 
-rmixed=function(n, Distr, p0, ...) {
-  y=qmixed(p = runif(n), Distr = Distr, p0 = p0, ...)
+rzi=function(n, Distr, p0, ...) {
+  y=qzi(p = runif(n), Distr = Distr, p0 = p0, ...)
   return(y)
 }

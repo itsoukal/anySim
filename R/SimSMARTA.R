@@ -15,75 +15,46 @@
 #' @export
 #'
 #' @examples
-#' ## Simulation example of a bivariate process with zero-inflated marginal distributions.
-#' # Define the simulation parameters ----------------------------------------
+#' ## Multivariate simulation of 3 stationary processes with specific distribution functions 
+#' ## and autocorrelation structures, as well as specific lag-0 cross-correlation matrix.
 #' \dontrun{
-#' LAG=2^6
-#' FFTLag=2^7
-#' SMALAG=2^6
-#' steps=2^14
-#'
-#' PFXs=list()
-#' FXs=c('qmixed','qmixed')
-#' # Gamma distribution: Gamma(shape=2, rate=1)
-#' PFXs[[1]]=list(Distr=qgamma, p0=0.9, shape=1, scale=1)
-#' # Weibull distribution: Weibull(shape=1, scale=2)
-#' PFXs[[2]]=list(Distr=qweibull, p0=0.85, shape=1, scale=2)
-#'
-#' ACFs=list()
-#' ACFs[[1]]=acsCAS(param = c(0.1, 0.6), lag = LAG)
-#' ACFs[[2]]=acsCAS(param = c(0.2, 0.3), lag = LAG)
-#'
-#' Cmat=matrix(c(1,0.6,0.6,1), ncol=2, nrow=2)
-#'
-#' # Calculate SMARTA's parameters -------------------------------------------
-#' SMAparam=EstSMARTA(dist = FXs, params = PFXs, ACFs = ACFs, Cmat = Cmat,
-#' DecoMethod = 'cor.smooth',FFTLag = FFTLag,
-#' NatafIntMethod = 'GH', NoEval = 9, polydeg = 8)
-#'
-#' # Simulate a SMARTA process -----------------------------------------------
-#' Sim=SimSMARTA(SMARTApar = SMAparam, steps = steps, SMALAG = SMALAG)
-#'
-#' # Draw some basic plots ---------------------------------------------------
-#' for (i in 1:2) {
-#'  par(mfrow=c(2,2))
-#'   plot(Sim$X[1:1001,i], type='l')
-#'  acf(Sim$X[,i], lag.max = 20); lines(0:20,ACFs[[i]][1:21], col='red', type='o')
-#'  plot(ecdf(Sim$X[,i]))
-#'   hist(Sim$X[,i],probability = TRUE)
+#' set.seed(9)
+#' 
+#' # Define the target autocorrelation structure of the 3 processes.
+#' ACSs=list()
+#' ACSs[[1]]=csCAS(param=c(0.1,0.7),lag=2^6)
+#' ACSs[[2]]=csCAS(param=c(0.2,1),lag=2^6)
+#' ACSs[[3]]=csCAS(param=c(0.1,0.5),lag=2^6)
+#' 
+#' # Define the matrix of lag-0 cross-correlation coefficients between the 3 processes.
+#' Cmat=matrix(c(1,0.4,-0.5,
+#'               0.4,1,-0.3,
+#'              -0.5,-0.3,1),ncol=3,nrow=3)
+#' 
+#' # Define the target distribution functions (ICDF) of the 3 processes
+#' FXs=rep('qmixed',3) # Define that distributions are of zero-inflated type.
+#' 
+#' # Define the distributions for the continuous part of the processes. 
+#' # In this example, a re-parameterized version of Gen. Gamma distribution is used for the second process.
+#' qgengamma=function(p,scale, shape1, shape2){
+#'   require(VGAM)
+#'   X=qgengamma.stacy(p=p,scale=scale,k=(shape1/shape2),d=shape2)
+#'   return(X)
 #' }
+#' 
+#' # Define the parameters of the target distributions.
+#' pFXs[[1]]=list(Distr=qbeta,p0=0,shape1=15,shape2=5) # Beta distribution
+#' pFXs[[2]]=list(Distr=qgengamma,p0=0.7,scale=0.12, shape1=1.35, shape2=0.4) # Gen. Gamma
+#' pFXs[[3]]=list(Distr=qnorm,p0=0,mean=15,sd=3) # Normal distribution
+#' 
+#' # Estimate the parameters of SMARTA model
+#' SMAparam=EstSMARTA(dist=FXs,params=pFXs,ACFs=ACSs,Cmat=Cmat,
+#'                    DecoMethod='cor.smooth',FFTLag = 2^7,
+#'                    NatafIntMethod='GH',NoEval=9,polydeg=8)
+#'                    
+#' # Generate the synthetic series     
+#' simSMARTA=SimSMARTA(SMARTApar=SMAparam,steps=2^14,SMALAG=2^6)
 #'}
-#'
-#'\dontrun{
-#' ## Simulation example of a bivariate process with Bernoulli marginal distributions.
-#' # Define the simulation parameters ----------------------------------------
-#' PFXs=list()
-#' FXs=c('qbinom','qbinom')
-#' PFXs[[1]]=list(size=1, prob=0.2)# Gamma distribution: Gamma(shape=2, rate=1)
-#' PFXs[[2]]=list(size=1, prob=0.25) # Weibull distribution: Weibull(shape=1, scale=2)
-#'
-#' ACFs=list()
-#' ACFs[[1]]=acsCAS(param = c(0.1, 0.6), lag = LAG)
-#' ACFs[[2]]=acsCAS(param = c(0.2, 0.3), lag = LAG)
-#'
-#' Cmat=matrix(c(1,0.6,0.6,1), ncol=2, nrow=2)
-#'
-#' # Calculate SMARTA’s parameters -------------------------------------------
-#' SMAparam=EstSMARTA(dist = FXs, params = PFXs, ACFs = ACFs, Cmat = Cmat, DecoMethod = 'cor.smooth',
-#'                    FFTLag = FFTLag, NatafIntMethod = 'Int', NoEval = 9, polydeg = 8)
-#' # Simulate a SMARTA process -----------------------------------------------
-#' Sim=SimSMARTA(SMARTApar = SMAparam, steps = steps, SMALAG = SMALAG)
-#'
-#' # Draw some basic plots ---------------------------------------------------
-#' for (i in 1:2) {
-#'   par(mfrow=c(2,2))
-#'   plot(Sim$X[1:1001,i], type='l')
-#'   acf(Sim$X[,i], lag.max = 20); lines(0:20,ACFs[[i]][1:21], col='red', type='o')
-#'   plot(ecdf(Sim$X[,i]))
-#'   hist(Sim$X[,i],probability = TRUE)
-#' }
-#'}
-#'
 SimSMARTA <- function(SMARTApar, steps, SMALAG=512) {
 
 

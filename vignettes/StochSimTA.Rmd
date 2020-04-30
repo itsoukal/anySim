@@ -43,7 +43,7 @@ In this case, the target autocorrelation structure is from an fGn process (i.e.,
 
 ```{r }
 # Define the dependence structure (autocorrelation coefficients)
-ACF=acsHurst(H=0.7, lag=500, var=1)
+ACF=csHurst(H=0.7, lag=500, var=1)
 
 # Define the marginal distribution
 fx='qgamma'
@@ -77,7 +77,7 @@ In this case, the target autocorrelation structure is from an fGn process (i.e.,
 
 ```{r }
 # Define the dependence structure (autocorrelation coefficients)
-ACF=acsHurst(H=0.7, lag=500, var=1)
+ACF=csHurst(H=0.7, lag=500, var=1)
 
 # Define the marginal distribution
 fx='qbeta'
@@ -116,7 +116,7 @@ In this case, the target autocorrelation structure is from an fGn process (i.e.,
 
 ```{r }
 # Define the dependence structure (autocorrelation coefficients)
-ACF=acsHurst(H=0.7, lag=500, var=1)
+ACF=csHurst(H=0.7, lag=500, var=1)
 
 # Define the marginal distribution
 # load the actuar library which contains the Burr type-XII distribution
@@ -160,7 +160,7 @@ In this case, the target autocorrelation structure is from an fGn process (i.e.,
 
 ```{r }
 # Define the dependence structure (autocorrelation coefficients)
-ACF=acsHurst(H=0.7, lag=500, var=1)
+ACF=csHurst(H=0.7, lag=500, var=1)
 
 # Define the marginal distribution
 fx='qbinom'
@@ -192,7 +192,7 @@ In this case, the target autocorrelation structure is from an fGn process (i.e.,
 
 ```{r }
 # Define the dependence structure (autocorrelation coefficients)
-ACF=acsHurst(H=0.7, lag=500, var=1)
+ACF=csHurst(H=0.7, lag=500, var=1)
 
 # Define the marginal distribution
 fx='qpois'
@@ -233,10 +233,10 @@ In this case, the target autocorrelation structure is from an fGn process (i.e.,
 
 ```{r }
 # Define the dependence structure (autocorrelation coefficients)
-ACF=acsHurst(H=0.7, lag=500, var=1)
+ACF=csHurst(H=0.7, lag=500, var=1)
 
 # Define the marginal distribution
-fx='qmixed'
+fx='qzi'
 p0=0.8
 pfx=list(Distr=qgamma, p0=0.8, shape=1, scale=1)
 
@@ -280,44 +280,6 @@ This model uses the sum of n, appropriately parameterised, AR(1) models to simul
 Simulation of a process with gamma marginal distribution, with shape=1, and scale=1.
 In this case, the target autocorrelation structure is givern from an CAS ACS with b=2 and k=0.5.
 
-```{r }
-# Define the dependence structure (autocorrelation coefficients)
-ACF=acsCAS(param=c(2, 0.5),lag=500,var=1)
-
-# Define the marginal distribution
-fx='qgamma'
-pfx=list(shape=1,scale=1)
-
-# Estimate the parameters of n-ARTA(1) model
-nAR1par=EstnAR1(ACF=ACF, Ar1Num = 4, dist=fx, params=pfx,
-NatafIntMethod ='GH', NoEval=9, polydeg=0)
-
-# Simulate the process 
-Sim=SimnAR1(nAR1param = nAR1par, steps = 10^5)
-
-# Compare the target and simulated autocorrelation structure 
-plot(0:50, ACF[1:51],type = "l",col="red",xlab = "Lag",ylab = "ACF",main=NULL)
-points(0:50,as.vector(acf(Sim$X,lag.max = 50,plot = FALSE)$acf),col="black",pch=19,cex=0.5)
-legend("topright",c("Target","Simulated"),col=c("red",'black'),
-           lwd=c(1,NA), lty=c(1,NA),pch=c(NA,19),box.lty=1,cex=0.7)
-
-# Compare target and simulated marginal distribution
-plot(sort(Sim$X[1:3000]),ppoints(Sim$X[1:3000]),pch=19,cex=0.5,
-     col="black",main=NULL,xlab="x",ylab=bquote(P(italic(underline(x)<=plain(x)))))
-lines(qgamma(seq(0,0.999,by = 0.001),scale=1, shape=1),seq(0,0.999,by = 0.001),col='red',cex=0.5)
-legend("bottomright",c("Target","Simulated"),col=c("red",'black'),
-           lwd=c(1,NA), lty=c(1,NA),pch=c(NA,19),box.lty=1,cex=0.7)
-
-# Plot the series
-plot(Sim$X[1:1000],type='l',col='red',ylab="x",main="Simulated series",xlab="t")
-
-# acf(Sim$X)
-# lines(0:(length(ACF)-1), ACF)
-# plot(Sim$X[1:1000], type='l', col='red')
-```
-
-The simulation procedure for discrete, or zero-inflated processes, is the same as in the case of ARTA(p) model.
-
 ### The SMARTA model
 This model uses an appropriately parameterised SMA(q) model to simulate an auxiliary Gaussian process (Gp) to establish the target correlation structure. In the final step, the Gp realisation is mapped to the actual domain through the ICDF of the target distribution. 
 
@@ -328,7 +290,7 @@ In this case, the target autocorrelation structure is from an CAS ACS with b=2 a
 
 ```{r }
 # Define the dependence structure (autocorrelation coefficients)
-ACF=acsCAS(param = c(2, 0.5), lag=512, var=1)
+ACF=csCAS(param = c(2, 0.5), lag=512, var=1)
 ACFs=list(ACF)
 
 # Define the marginal distribution
@@ -381,7 +343,7 @@ NumOfSeasons=12
 rtarget<-c(0.7,0.6,0.3,0.5,0.6,0.7,0.5,0.6,0.7,0.8,0.7,0.6)
 
 # Define the marginal distributions for each season
-FXs<-rep('qmixed',NumOfSeasons)
+FXs<-rep('qzi',NumOfSeasons)
 PFXs<-vector("list",NumOfSeasons)
 PFXs[[1]]=list(p0=0.4, Distr=qgamma, scale=1, shape=1)
 PFXs[[2]]=list(p0=0.5, Distr=qweibull, scale=1, shape=1)
@@ -463,7 +425,7 @@ steps=2^14
 
 # Define the marginal distribution of the two processes
 PFXs=list()
-FXs=c('qmixed','qmixed')
+FXs=c('qzi','qzi')
 # Gamma distribution: Gamma(shape=2, rate=1)
 PFXs[[1]]=list(Distr=qgamma, p0=0.9, shape=1, scale=1)
 # Weibull distribution: Weibull(shape=1, scale=2)
@@ -471,8 +433,8 @@ PFXs[[2]]=list(Distr=qweibull, p0=0.85, shape=1, scale=2)
 
 # Define the dependence structure (autocorrelation coefficients) of the two processes
 ACFs=list()
-ACFs[[1]]=acsCAS(param = c(0.1, 0.6), lag = LAG)
-ACFs[[2]]=acsCAS(param = c(0.2, 0.3), lag = LAG)
+ACFs[[1]]=csCAS(param = c(0.1, 0.6), lag = LAG)
+ACFs[[2]]=csCAS(param = c(0.2, 0.3), lag = LAG)
 
 # Define the lag-0 cross-correlation coefficient of the two processes
 Cmat=matrix(c(1,0.6,0.6,1), ncol=2, nrow=2)
@@ -526,8 +488,8 @@ PFXs[[2]]=list(size=1, prob=0.25) # Weibull distribution: Weibull(shape=1, scale
 
 # Define the dependence structure (autocorrelation coefficients) of the two processes
 ACFs=list()
-ACFs[[1]]=acsCAS(param = c(0.1, 0.6), lag = LAG)
-ACFs[[2]]=acsCAS(param = c(0.2, 0.3), lag = LAG)
+ACFs[[1]]=csCAS(param = c(0.1, 0.6), lag = LAG)
+ACFs[[2]]=csCAS(param = c(0.2, 0.3), lag = LAG)
 
 # Define the lag-0 cross-correlation coefficient of the two processes
 Cmat=matrix(c(1,0.6,0.6,1), ncol=2, nrow=2)

@@ -1,0 +1,116 @@
+#' @title Disaggregation of a coarse level timeseries sequence to a finer level timeseries sequence exhibiting the target marginal distribution and correlation structure (stationary).
+#'
+#' @description Disaggregation of a coarse level timeseries sequence to a finer level timeseries sequence exhibiting the target marginal distribution and correlation structure (stationary).
+#'
+#' @param HLSeries A vector, thati is coarse level timeseries sequence specifying the values to disaggreate into a time series sequence of finer level..
+#' @param ARTApar A list containing the parameters of the model. The list is constructed by the function "EstARTAp".
+#' @param max.iter A scalar specifying the maximum number of allowed repetitions (parameter of the disaggregation algorithm - typically set between 300-500.).
+#' @param steps A scalar specifying the number of timesteps of the sequence to generate.
+#' @param Adjust A logical operator (TRUE or FALSE) specifying whether (TRUE) or not (FALSE) to perfom the proportianal adjusting operation  (parameter of the disaggregation algorithm - typically set to TRUE).
+#'
+#' @return A list of the 3 generated time series (in vector format):
+#' X: The final time series at the actual domain with the target marginal distribution and
+#' correlation structure;
+#'
+#' @export
+#'
+#'
+#' @examples
+#' ## Disaggregation of a sequence of 100 steps of annual streamflow to monthly amounts
+#' ## The lower-level process (i.e., that of monthly time step) is a cyclostationary one,
+#' while the coarser-level process is stationary. 
+#' \dontrun{
+#' 
+#' ## Simulation of coarser-level (Annual) stationary process ##
+#' 
+#' # Define the target autocorrelation structure of coarser-level process.
+#' ACS_annual=csCAS(param=c(2.623,1.557),lag=200)
+#' 
+#' # Define the target distribution function of coarser-level process.
+#' # Here, a re-parameterized version of Gen. Gamma distribution is used.
+#' qgengamma=function(p,scale,shape1,shape2){
+#'   require(VGAM)
+#'   X=qgengamma.stacy(p=p,scale=scale,k=(shape1/shape2),d=shape2)
+#'   return(X)
+#' } 
+#' 
+#' FX='qgengamma'
+#' 
+#' # Define the parameters of the target distribution.
+#' pFX=list(scale=7.419,shape1=20.493,shape2=1.198)
+#' 
+#' # Estimate the parameters of the auxiliary Gaussian AR(p) model.
+#' ARTApar=EstARTAp(ACF=ACS_annual,dist=FX,params=pFX,NatafIntMethod='GH')
+#' 
+#' # Generate the annual synthetic series of 10000 length. 
+#' simAnnual=SimARTAp(ARTApar = ARTApar, steps = 10^3)
+#' 
+#' ## Simulation of lower-level (Monthly) cyclostationary process ##
+#' 
+#' # Define the number of seasons.
+#' NumOfSeasons=12 # number of months 
+#' 
+#' # Define the lag-1 season-to-season correlation coefficients (12 values) of monthly Nile Streamflow.
+#' rtarget_mon=c(0.938,0.931,0.926,0.903,0.761,0.837,0.355,0.662,0.796,0.876,0.826,0.720)
+#' 
+#' # Define the target distribution functions for each season.
+#' # In this example, the above re-parameterized version of Gen. Gamma distribution is used.
+#' # Or, a re-parameterized version of Burr Type XII distribution.
+#' qburr=function(p,scale,shape1,shape2) {
+#'   require(ExtDist)
+#'   x=ExtDist::qBurr(p=p,b=scale,g=shape1,s=shape2)
+#'   return(x)
+#' }
+#' 
+#' FXs=c('qgengamma','qburr','qburr','qburr','qburr','qgengamma','qgengamma',
+#'       'qgengamma','qgengamma','qgengamma','qgengamma','qgengamma')
+#' 
+#' # Define the parameters of distribution functions for each season.
+#' PFXs<-vector("list",NumOfSeasons)
+#' PFXs[[1]]=list(scale=0.000862254,shape1=18.24168,shape2=0.4491688)
+#' PFXs[[2]]=list(scale=2.352517,shape1=6.233872,shape2=0.7284742)
+#' PFXs[[3]]=list(scale=1.586728,shape1=9.007934,shape2=0.4096283)
+#' PFXs[[4]]=list(scale=1.337449,shape1=12.01606,shape2=0.3374601)
+#' PFXs[[5]]=list(scale=1.56249,shape1=6.386645,shape2=0.8020387)
+#' PFXs[[6]]=list(scale=0.0005479373,shape1=18.54147,shape2=0.4500553)
+#' PFXs[[7]]=list(scale=0.001297873,shape1=19.83979,shape2=0.4629369)
+#' PFXs[[8]]=list(scale=15.27454,shape1=5.607777,shape2=3.654064)
+#' PFXs[[9]]=list(scale=17.18964,shape1=7.913649,shape2=3.848175)
+#' PFXs[[10]]=list(scale=8.327586,shape1=7.307034,shape2=2.280058)
+#' PFXs[[11]]=list(scale=9.226506,shape1=2.42338,shape2=4.200226)
+#' PFXs[[12]]=list(scale=0.002727125,shape1=14.18116,shape2=0.4648454)
+#' 
+#' 
+#' # Estimate the parameters of SPARTA model.
+#' SPARTApar<-EstSPARTA(s2srtarget=rtarget_mon,dist=FXs,params=PFXs,
+#'                      NatafIntMethod='GH',NoEval=9,polydeg=8,nodes=11)
+#' 
+#' # Disaggregate the annual series to monthly amounts.
+#' disagMonthly<-Disagg_SPARTA(HLSeries=simAnnual$X[1:100],SPARTApar=SPARTApar,max.iter=300,steps=NumOfSeasons,Adjust=T)
+#' }
+Disagg_SPARTA=function(HLSeries, SPARTApar, max.iter, steps, Adjust=T){
+
+  Zall=Zprevious=rnorm(1)
+  disag=matrix(NA, ncol=steps, nrow=length(HLSeries))
+
+  for (i in 1:length(HLSeries)) {
+
+    HLValue=as.vector(HLSeries[i])
+    if (HLValue==0) {
+      disag[i,]=rep(0, steps)
+      Zall=c(Zall, rnorm(steps))
+      Zprevious=Zall[-c(1:(i*steps))]
+    }else {
+    temp=Disagg_help_SPARTA(HLValue = HLValue, Zprevious = Zprevious, SPARTApar = SPARTApar,
+                     max.iter = max.iter, steps = steps, Adjust = Adjust)
+
+    disag[i,]=temp$X
+    Zall=c(Zall, temp$Z)
+    Zprevious=Zall[-c(1:(i*steps))]
+    }
+    print(i)
+  }
+  X=as.vector(t(disag))
+  return(list('X'=X))
+
+}

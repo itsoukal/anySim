@@ -29,7 +29,7 @@ Disaggregation of a single value to a timeseries sequence exhibiting the target 
 }
 \examples{
 ## Disaggregation of a single 24-hour Rainfall ammount to 1-minute sequence.
-## The lower level process (i.e., that of 1-minute) is assumed to be a zero-inflated one 
+## The lower level process (i.e., that of 1-minute) is assumed to be a zero-inflated one
 ## (i.e., using a mixed marginal distribution), with p0=0.95, and a Gamma distribution
 ## for the continuous part with shape=1 and scale=8.
 ## In this case, the target autocorrelation strucure is from

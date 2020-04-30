@@ -32,7 +32,7 @@
 #' ## with p0=0.7 a Gamma distribution
 #' ## for the continuous part with shape=1 and scale=1.
 #'
-#' fx=fy='qmixed'
+#' fx=fy='qzi'
 #' pfx=pfy=list(Distr=qgamma, p0=0.7, shape=1, scale=1)
 #' rhoz=seq(from=0, to=1 , by=0.2)
 #' rhox=NatafInt(rho = rhoz, fx = fx, fy = fy, paramlistfx = pfx, paramlistfy = pfy)
@@ -43,7 +43,7 @@
 #'}
 NatafInt=function(rho, fx, fy, paramlistfx, paramlistfy){
 
-  if (fx !='qmixed') {
+  if (fx !='qzi') {
     funfx=match.fun(fx)
     stats1=do.call(DistrStats2, args = c(qDistr=funfx, paramlistfx))
 
@@ -56,7 +56,7 @@ NatafInt=function(rho, fx, fy, paramlistfx, paramlistfy){
     pfx$p0=NULL
     suppressWarnings( stats1<-DistrStats2(qDistr = function(x) funfx(x, Distr = Distr, p0 = p0,  unlist(pfx))) )
   }
-  if (fy !='qmixed') {
+  if (fy !='qzi') {
     funfy=match.fun(fy)
     stats2=do.call(DistrStats2, args = c(qDistr=funfy, paramlistfy))
   } else {

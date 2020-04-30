@@ -1,7 +1,7 @@
 #' @title Disaggregation of a single value to a timeseries sequence exhibiting the target marginal distribution and correlation structure (stationary).
-#' 
+#'
 #' @description Disaggregation of a single value to a timeseries sequence exhibiting the target marginal distribution and correlation structure (stationary).
-#' 
+#'
 #' @param HLValue A scalar specifying the (single) value to disaggreate into a time series sequence.
 #' @param ARTApar A list containing the parameters of the model. The list is constructed by the function "EstARTAp".
 #' @param max.iter A scalar specifying the maximum number of allowed repetitions (parameter of the disaggregation algorithm - typically set between 300-500.).
@@ -19,7 +19,7 @@
 #'
 #' @examples
 #' ## Disaggregation of a single 24-hour Rainfall ammount to 1-minute sequence.
-#' ## The lower level process (i.e., that of 1-minute) is assumed to be a zero-inflated one 
+#' ## The lower level process (i.e., that of 1-minute) is assumed to be a zero-inflated one
 #' ## (i.e., using a mixed marginal distribution), with p0=0.95, and a Gamma distribution
 #' ## for the continuous part with shape=1 and scale=8.
 #' ## In this case, the target autocorrelation strucure is from
@@ -30,9 +30,9 @@
 #' maxlag=60
 #' ACFT=acsCAS(param = c(0, 0.2), lag=maxlag)
 #' param=EstARTAp(ACF = ACFT, dist = FX, params = PFX, NatafIntMethod = 'GH')
-#' 
+#'
 #' Sim=SimARTAp(ARTApar = param, burn = 1000, steps = 24*60*100) #24h*60min*100Days
-#' 
+#'
 #' SUMX=apply(X = matrix(data = Sim$X, ncol=24*60, byrow = 0), MARGIN = 1, FUN = sum)
 #' HLValue=as.vector(quantile(SUMX, probs = 0.5, type = 0));HLValue
 # '
@@ -53,7 +53,7 @@ Disagg_help<-function(HLValue, Zprevious, ARTApar, max.iter, steps, Adjust=T){
   XBest=rep(NaN, steps)
   
   Dicrit=20000
-  Thres=0.0002
+  Thres=0.00002
   if (HLValue>Thres) {
     # while  ( data.table::between(Dicrit, HLValue*0.80, HLValue*1.20)==FALSE ) {
     while ( any(is.nan(XBest))==TRUE ) {
@@ -66,7 +66,7 @@ Disagg_help<-function(HLValue, Zprevious, ARTApar, max.iter, steps, Adjust=T){
         
         Zprevioustemp<-c(Zprevioustemp,Znew)
         
-        for (index in 2:steps){ # need 
+        for (index in 2:steps){ # need
           
           Zprevioustemp<-Zprevioustemp[-1]
           Znew<-sum(rev(Zprevioustemp)*phi)+rnorm(1,mean=0,sd=sigma)
@@ -77,7 +77,12 @@ Disagg_help<-function(HLValue, Zprevious, ARTApar, max.iter, steps, Adjust=T){
         U=pnorm(Zall, mean =0, sd = 1)
         Xall<-eval(as.call(c(as.name(FX),list(U),PFX)))
         XSum=sum(Xall,na.rm=TRUE)
-        Distance[j]=log(abs(HLValue-XSum))
+        
+        if (XSum==0) {
+          Distance[j]=NA
+        } else {
+          Distance[j]=((HLValue-XSum))^2
+        }
         
         Zlist[[j]]<-Zall
         Xlist[[j]]<-Xall
@@ -113,7 +118,7 @@ Disagg_help<-function(HLValue, Zprevious, ARTApar, max.iter, steps, Adjust=T){
     Znew<-sum(rev(Zprevioustemp)*phi)+rnorm(1,mean=0,sd=sigma)
     Zall[1]<-Znew
     Zprevioustemp<-c(Zprevioustemp,Znew)
-    for (index in 2:steps){ # need 
+    for (index in 2:steps){ # need
       Zprevioustemp<-Zprevioustemp[-1]
       Znew<-sum(rev(Zprevioustemp)*phi)+rnorm(1,mean=0,sd=sigma)
       Zprevioustemp<-c(Zprevioustemp,Znew)

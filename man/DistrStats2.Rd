@@ -4,8 +4,15 @@
 \alias{DistrStats2}
 \title{Estimation of the theoretical Mean, Variance, Skewness and Kurtosis coefficients of a distribution function (from the quantile function).}
 \usage{
-DistrStats2(qDistr, lb = 0, ub = 1, subdiv = 90000,
-  rel.tol = 10^-8, abs.tol = 10^-8, ...)
+DistrStats2(
+  qDistr,
+  lb = 0,
+  ub = 1,
+  subdiv = 90000,
+  rel.tol = 10^-8,
+  abs.tol = 10^-8,
+  ...
+)
 }
 \arguments{
 \item{qDistr}{The quantile function (as a function) of the distribution.}

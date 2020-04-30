@@ -24,7 +24,7 @@
 #' ## with p0=0.9 a Gamma distribution
 #' ## for the continuous part with shape=0.1 and scale=1.
 #'\dontrun{
-#' fx=fy='qmixed'
+#' fx=fy='qzi'
 #' pfx=pfy=list(Distr=qgamma, p0=0.9, shape=0.1, scale=1)
 #' rhoz=seq(from=0, to=1 , length.out = 21)
 #' rhox=NatafInt(rho = rhoz, fx = fx, fy = fy, paramlistfx = pfx, paramlistfy = pfy)
@@ -89,14 +89,14 @@ NatafInvD=function(targetrho, fx, fy, paramlistfx, paramlistfy, NatafIntMethod='
     rxmax=rx[length(rx)]
     rxmax=ifelse(rxmax>1,1,rxmax)
 
-    DE=DEoptim::DEoptim(fn = SPfunObj, lower = c(0.0001,0.0001),upper = c(10000, 10000),
+    DE=DEoptim::DEoptim(fn = TwoParfunObj, lower = c(0.0001,0.0001),upper = c(10000, 10000),
                         rx=rx, rz=rz, rmax=rxmax,
                         control = DEoptim.control(trace = 0,NP=30,itermax =1000))
     DE$optim$bestmem
     b=DE$optim$bestmem[1]
     c=DE$optim$bestmem[2]
     targetrho=ifelse(targetrho>rxmax,NA,targetrho)
-    rzEq=SPfun(b, c, rx=targetrho, rmax = rxmax)
+    rzEq=TwoParfun(b, c, rx=targetrho, rmax = rxmax)
     #
     # mod <- nls(rz~(((1+b*rxn)^(1-c))-1)/(-1+(1+b)^(1-c)), start=list(b=0.001,c=0.1) ,upper = list(b=10,c=10),algorithm = 'port')
     # yhat <- predict(mod,rxn,type="response")
@@ -109,16 +109,16 @@ NatafInvD=function(targetrho, fx, fy, paramlistfx, paramlistfy, NatafIntMethod='
   return(list('dfnataf'=dfnataf, 'rzEq'=rzEq))
 }
 
-SPfun<-function(b,c,rx,rmax=1){
+TwoParfun<-function(b,c,rx,rmax=1){
   A=(-1+((1+b*rx)^(1-c)))
   B=(-1+(1+b*rmax)^(1-c))
   rzhat=A/B
   return(rzhat)
 }
 
-SPfunObj<-function(par,rz,rx,rmax=1){
+TwoParfunObj<-function(par,rz,rx,rmax=1){
   b=par[1];  c=par[2];
-  rzhat=SPfun(b = b,c = c,rx = rx,rmax = rmax)
+  rzhat=TwoParfun(b = b,c = c,rx = rx,rmax = rmax)
 
   SSE=sum((rz-rzhat)^2)
   SSE=ifelse(is.nan(SSE),10^6,SSE)
